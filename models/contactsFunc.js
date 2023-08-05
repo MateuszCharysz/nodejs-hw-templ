@@ -32,8 +32,12 @@ const saveArrayToFile = (filePath, arr) => {
     console.error(err);
   }
 };
+const newArr = (oldArr, item) => {
+  return [...oldArr, item];
+};
 
 module.exports = {
   getContactsDataInArray,
   saveArrayToFile,
+  newArr,
 };
