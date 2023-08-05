@@ -6,17 +6,17 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   console.log(res);
   const contacts = await listContacts();
-  res.json(
-    contacts,
-  );
+  res.json(contacts);
 });
 
 router.get('/:contactId', async (req, res, next) => {
-  const {contactId} = req.params
-  res.json({
-    message:
-      'GetContact by ID - wywoluje getContactsById która przekazuje jeden contacts.json',
-  });
+  const { contactId } = req.params;
+  const contact = await getContactById(contactId);
+  if (contact.length > 0) {
+    res.json(contact[0]);
+  } else {
+    res.status(404).json({ message: 'Not found' });
+  }
 });
 
 router.post('/', async (req, res, next) => {

@@ -12,17 +12,15 @@ const listContacts = async () => {
 
 const getContactById = async contactId => {
   const contacts = await getContactsDataInArray(contactsPath);
-  if (contactId === '') {
-    return console.log('Please write id');
-  } else {
     const contact = contacts.filter(({ id }) => id === contactId);
-    if (contact.length > 0) {
-      console.table(contact);
-    } else {
-      console.log('There is no contact with given id.');
-    }
+    return contact
+    // if (contact.length > 0) {
+    //   console.table(contact);
+    // } else {
+    //   console.log('There is no contact with given id.');
+    // }
   }
-};
+
 
 const removeContact = async contactId => {};
 
