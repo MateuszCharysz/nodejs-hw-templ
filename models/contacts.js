@@ -20,7 +20,7 @@ const getContactById = async contactId => {
   return contact;
 };
 
-const removeContact = (contacts) => {
+const removeContact = contacts => {
   saveArrayToFile(contactsPath, contacts);
 };
 
@@ -36,7 +36,11 @@ const addContact = async (name, email, phone) => {
   return contact;
 };
 
-const updateContact = async (contactId, body) => {};
+const updateContact = async (contactId, update, arr) => {
+  arr.map(contact =>
+    contact.id === contactId ? { ...contact, ...update } : contact,
+  );
+};
 
 module.exports = {
   listContacts,
