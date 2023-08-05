@@ -1,14 +1,34 @@
-// const fs = require('fs/promises')
+// const { nanoid } = require('nanoid');
+const path = require('node:path');
+const { getContactsDataInArray } = require('./contactsFunc');
 
-const listContacts = async () => {}
+const contactsPath = path.format({ dir: './models', base: 'contacts.json' });
+console.log(contactsPath);
 
-const getContactById = async (contactId) => {}
+const listContacts = async () => {
+  const contacts = await getContactsDataInArray(contactsPath);
+  return contacts;
+};
 
-const removeContact = async (contactId) => {}
+const getContactById = async contactId => {
+  const contacts = await getContactsDataInArray(contactsPath);
+  if (contactId === '') {
+    return console.log('Please write id');
+  } else {
+    const contact = contacts.filter(({ id }) => id === contactId);
+    if (contact.length > 0) {
+      console.table(contact);
+    } else {
+      console.log('There is no contact with given id.');
+    }
+  }
+};
 
-const addContact = async (body) => {}
+const removeContact = async contactId => {};
 
-const updateContact = async (contactId, body) => {}
+const addContact = async body => {};
+
+const updateContact = async (contactId, body) => {};
 
 module.exports = {
   listContacts,
@@ -16,4 +36,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+};
