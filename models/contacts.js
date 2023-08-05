@@ -20,15 +20,8 @@ const getContactById = async contactId => {
   return contact;
 };
 
-const removeContact = async contactId => {
-  const contacts = await getContactsDataInArray(contactsPath);
-  const remContactArr = contacts.filter(({ id }) => id !== contactId);
-  if (remContactArr.length < contacts.length) {
-    saveArrayToFile(contactsPath, remContactArr);
-    console.log('Contact succesfully removed');
-  } else {
-    console.log('There is no contact with given id. Contacts intact');
-  }
+const removeContact = (contacts) => {
+  saveArrayToFile(contactsPath, contacts);
 };
 
 const addContact = async (name, email, phone) => {
