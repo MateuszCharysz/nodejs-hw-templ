@@ -7,7 +7,6 @@ const {
 } = require('./contactsFunc');
 
 const contactsPath = path.format({ dir: './models', base: 'contacts.json' });
-console.log(contactsPath);
 
 const listContacts = async () => {
   const contacts = await getContactsDataInArray(contactsPath);

@@ -11,7 +11,6 @@ const {
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
-  console.log(res);
   const contacts = await listContacts();
   res.json(contacts);
 });
@@ -63,18 +62,20 @@ router.delete('/:contactId', async (req, res, next) => {
 router.put('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
   const update = req.body;
-  const contactToValidate = Joi.object({
-    name: Joi.string().trim().max(35),
-    email: Joi.string().email(),
-    phone: Joi.string(),
-  });
+  const contactToValidate = Joi.object()
+    .keys({
+      name: Joi.string().trim().max(35),
+      email: Joi.string().email(),
+      phone: Joi.string(),
+    })
+    .or('name', 'email', 'phone')
+    .required();
   try {
-    const validation = await contactToValidate.validateAsync({
+    await contactToValidate.validateAsync({
       name: update.name,
       email: update.email,
       phone: update.phone,
     });
-    console.log(validation)
     const contacts = await listContacts();
     if (contacts.some(({ id }) => id === contactId)) {
       res.json(updateContact(contactId, update, contacts));
