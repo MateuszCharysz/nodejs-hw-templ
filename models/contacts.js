@@ -36,10 +36,15 @@ const addContact = async (name, email, phone) => {
   return contact;
 };
 
-const updateContact = async (contactId, update, arr) => {
-  arr.map(contact =>
+const updateContact = (contactId, update, arr) => {
+  const updatedContacts = arr.map(contact =>
     contact.id === contactId ? { ...contact, ...update } : contact,
   );
+  const updatedContact = updatedContacts.find(
+    contact => contact.id === contactId,
+  );
+  saveArrayToFile(contactsPath, updatedContacts);
+  return updatedContact;
 };
 
 module.exports = {

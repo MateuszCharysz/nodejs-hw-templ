@@ -5,7 +5,7 @@ const {
   getContactById,
   addContact,
   removeContact,
-  // updateContact,
+  updateContact,
 } = require('../../models/contacts');
 
 const router = express.Router();
@@ -61,28 +61,29 @@ router.delete('/:contactId', async (req, res, next) => {
 });
 
 router.put('/:contactId', async (req, res, next) => {
-  // const { contactId } = req.params;
+  const { contactId } = req.params;
   const update = req.body;
   const contactToValidate = Joi.object({
     name: Joi.string().trim().max(35),
     email: Joi.string().email(),
     phone: Joi.string(),
   });
-    try {
-      await contactToValidate.validateAsync({
-        name: update.name,
-        email: update.email,
-        phone: update.phone,
-      });
-      // const contact = await addContact(name, email, phone);
-      // res.status(201).json(contact);
-    } catch (err) {
-      res.status(400).json({ message: err.message });
+  try {
+    const validation = await contactToValidate.validateAsync({
+      name: update.name,
+      email: update.email,
+      phone: update.phone,
+    });
+    console.log(validation)
+    const contacts = await listContacts();
+    if (contacts.some(({ id }) => id === contactId)) {
+      res.json(updateContact(contactId, update, contacts));
+    } else {
+      res.status(404).json({ message: 'Not found' });
     }
-  // res.json({
-  //   message:
-  //     'aktualizuje kontakt - na podstawie id -  updateContact(id, body) JOI',
-  });
-
+  } catch (err) {
+    res.status(400).json({ message: 'Missing fields' });
+  }
+});
 
 module.exports = router;
