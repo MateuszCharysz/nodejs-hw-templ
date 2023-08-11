@@ -18,7 +18,6 @@ const getContactById = async contactId => {
   }
 };
 
-
 const addContact = async (name, email, phone) => {
   try {
     const contact = await Contact.create({
@@ -32,8 +31,13 @@ const addContact = async (name, email, phone) => {
   }
 };
 
-const removeContact = contacts => {
-  saveArrayToFile(contactsPath, contacts);
+const removeContact = async contactId => {
+  try {
+    const contact = await Contact.findByIdAndDelete(contactId);
+    return contact;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const updateContact = (contactId, update, arr) => {
