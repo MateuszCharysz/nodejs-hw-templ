@@ -18,20 +18,22 @@ const getContactById = async contactId => {
   }
 };
 
-const removeContact = contacts => {
-  saveArrayToFile(contactsPath, contacts);
-};
 
 const addContact = async (name, email, phone) => {
-  const contacts = await getContactsDataInArray(contactsPath);
-  const contact = {
-    id: nanoid(),
-    name: name,
-    email: email,
-    phone: phone,
-  };
-  saveArrayToFile(contactsPath, newArr(contacts, contact));
-  return contact;
+  try {
+    const contact = await Contact.create({
+      name: name,
+      email: email,
+      phone: phone,
+    });
+    return contact;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const removeContact = contacts => {
+  saveArrayToFile(contactsPath, contacts);
 };
 
 const updateContact = (contactId, update, arr) => {
