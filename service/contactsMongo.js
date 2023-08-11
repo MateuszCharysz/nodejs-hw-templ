@@ -1,22 +1,21 @@
-const { nanoid } = require('nanoid');
-const path = require('node:path');
-const {
-  getContactsDataInArray,
-  saveArrayToFile,
-  newArr,
-} = require('./contactsFunc');
-
-const contactsPath = path.format({ dir: './models', base: 'contacts.json' });
+const Contact = require('../models/contact.shem');
 
 const listContacts = async () => {
-  const contacts = await getContactsDataInArray(contactsPath);
-  return contacts;
+  try {
+    const contacts = await Contact.find();
+    return contacts;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const getContactById = async contactId => {
-  const contacts = await getContactsDataInArray(contactsPath);
-  const contact = contacts.filter(({ id }) => id === contactId);
-  return contact;
+  try {
+    const contact = await Contact.findById(contactId);
+    return contact;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const removeContact = contacts => {

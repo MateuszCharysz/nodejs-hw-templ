@@ -6,7 +6,7 @@ const {
   addContact,
   removeContact,
   updateContact,
-} = require('../../models/contacts');
+} = require('../../service/contactsMongo');
 
 const router = express.Router();
 
@@ -18,10 +18,10 @@ router.get('/', async (req, res, next) => {
 router.get('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
   const contact = await getContactById(contactId);
-  if (contact.length > 0) {
-    res.json(contact[0]);
-  } else {
+  if (!contact) {
     res.status(404).json({ message: 'Not found' });
+  } else {
+    res.json(contact);
   }
 });
 

@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const DB_CONTACTS = process.env.DB_CONTACTS;
 
 const connection = mongoose.connect(DB_CONTACTS, {
+  dbName: 'db-contacts',
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
