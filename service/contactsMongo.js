@@ -51,10 +51,26 @@ const updateContact = async (contactId, update) => {
   }
 };
 
+const updateFav = async (contactId, favorite) => {
+  try {
+    const contact = await Contact.findByIdAndUpdate(
+      contactId,
+      { favorite },
+      {
+        new: true,
+      },
+    );
+    return contact;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 module.exports = {
   listContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
+  updateFav,
 };

@@ -6,6 +6,7 @@ const {
   addContact,
   removeContact,
   updateContact,
+  updateFav
 } = require('../../service/contactsMongo');
 
 const router = express.Router();
@@ -67,23 +68,38 @@ router.put('/:contactId', async (req, res, next) => {
     .or('name', 'email', 'phone')
     .required();
   try {
-    console.log(
-      await contactToValidate.validateAsync({
-        name: update.name,
-        email: update.email,
-        phone: update.phone,
-      }),
-    );
-
-    const contactCheck = await getContactById(contactId);
-    if (!contactCheck) {
+    await contactToValidate.validateAsync({
+      name: update.name,
+      email: update.email,
+      phone: update.phone,
+    });
+    const contact = await updateContact(contactId, update);
+    if (!contact) {
       res.status(404).json({ message: 'Not found' });
     } else {
-      res.json(await updateContact(contactId, update));
+      res.json(contact);
     }
   } catch (err) {
     res.status(400).json({ message: 'Missing fields' });
   }
 });
+
+router.patch('/:contactId/favorite',async (req, res, next) => {
+  const { contactId } = req.params;
+  const body = req.body;
+  const bodyToValidate = Joi.object({
+ favorite: Joi.boolean().required()})
+  try {
+    await bodyToValidate.validateAsync(body);
+    const contact = await updateFav(contactId, body);
+    if (!contact) {
+      res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json(contact);
+    }
+  } catch (err) {
+    res.status(400).json({ message: 'missing field favorite' });
+  }
+})
 
 module.exports = router;
