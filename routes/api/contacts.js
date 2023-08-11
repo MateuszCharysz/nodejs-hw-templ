@@ -67,16 +67,19 @@ router.put('/:contactId', async (req, res, next) => {
     .or('name', 'email', 'phone')
     .required();
   try {
-    await contactToValidate.validateAsync({
-      name: update.name,
-      email: update.email,
-      phone: update.phone,
-    });
-    const contacts = await listContacts();
-    if (contacts.some(({ id }) => id === contactId)) {
-      res.json(updateContact(contactId, update, contacts));
-    } else {
+    console.log(
+      await contactToValidate.validateAsync({
+        name: update.name,
+        email: update.email,
+        phone: update.phone,
+      }),
+    );
+
+    const contactCheck = await getContactById(contactId);
+    if (!contactCheck) {
       res.status(404).json({ message: 'Not found' });
+    } else {
+      res.json(await updateContact(contactId, update));
     }
   } catch (err) {
     res.status(400).json({ message: 'Missing fields' });

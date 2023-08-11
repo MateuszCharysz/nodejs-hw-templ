@@ -40,15 +40,15 @@ const removeContact = async contactId => {
   }
 };
 
-const updateContact = (contactId, update, arr) => {
-  const updatedContacts = arr.map(contact =>
-    contact.id === contactId ? { ...contact, ...update } : contact,
-  );
-  const updatedContact = updatedContacts.find(
-    contact => contact.id === contactId,
-  );
-  saveArrayToFile(contactsPath, updatedContacts);
-  return updatedContact;
+const updateContact = async (contactId, update) => {
+  try {
+    const contact = await Contact.findByIdAndUpdate(contactId, update, {
+      new: true,
+    });
+    return contact;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 module.exports = {
