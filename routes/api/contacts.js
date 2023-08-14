@@ -1,12 +1,16 @@
 const express = require('express');
-const Joi = require('joi');
+const {
+  newContactJoiValidation,
+  editedContactJoiValidation,
+  favJoiValidation,
+} = require('../../service/contactsJoi');
 const {
   listContacts,
   getContactById,
   addContact,
   removeContact,
   updateContact,
-  updateFav
+  updateFav,
 } = require('../../service/contactsMongo');
 
 const router = express.Router();
@@ -28,17 +32,8 @@ router.get('/:contactId', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   const { name, email, phone } = req.body;
-  const contactToValidate = Joi.object({
-    name: Joi.string().trim().max(35).required(),
-    email: Joi.string().email().required(),
-    phone: Joi.string().required(),
-  });
   try {
-    await contactToValidate.validateAsync({
-      name: name,
-      email: email,
-      phone: phone,
-    });
+    await newContactJoiValidation(name, email, phone);
     const contact = await addContact(name, email, phone);
     res.status(201).json(contact);
   } catch (err) {
@@ -59,20 +54,8 @@ router.delete('/:contactId', async (req, res, next) => {
 router.put('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
   const update = req.body;
-  const contactToValidate = Joi.object()
-    .keys({
-      name: Joi.string().trim().max(35),
-      email: Joi.string().email(),
-      phone: Joi.string(),
-    })
-    .or('name', 'email', 'phone')
-    .required();
   try {
-    await contactToValidate.validateAsync({
-      name: update.name,
-      email: update.email,
-      phone: update.phone,
-    });
+    await editedContactJoiValidation(update);
     const contact = await updateContact(contactId, update);
     if (!contact) {
       res.status(404).json({ message: 'Not found' });
@@ -84,13 +67,11 @@ router.put('/:contactId', async (req, res, next) => {
   }
 });
 
-router.patch('/:contactId/favorite',async (req, res, next) => {
+router.patch('/:contactId/favorite', async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.body;
-  const bodyToValidate = Joi.object({
- favorite: Joi.boolean().required()})
   try {
-    await bodyToValidate.validateAsync(body);
+    await favJoiValidation(body);
     const contact = await updateFav(contactId, body);
     if (!contact) {
       res.status(404).json({ message: 'Not found' });
@@ -100,6 +81,6 @@ router.patch('/:contactId/favorite',async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ message: 'missing field favorite' });
   }
-})
+});
 
 module.exports = router;
