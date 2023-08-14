@@ -55,7 +55,7 @@ const updateFav = async (contactId, favorite) => {
   try {
     const contact = await Contact.findByIdAndUpdate(
       contactId,
-      { favorite },
+      favorite,
       {
         new: true,
       },
