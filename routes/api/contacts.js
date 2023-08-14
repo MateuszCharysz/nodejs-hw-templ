@@ -16,17 +16,21 @@ const {
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
-  const contacts = await listContacts();
-  res.json(contacts);
+  try {
+    const contacts = await listContacts();
+    res.json(contacts);
+  } catch (err) {
+    res.status(500).json({ message: 'Error ocurred', error: err });
+  }
 });
 
 router.get('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
-  if (!contact) {
-    res.status(404).json({ message: 'Not found' });
-  } else {
+  try {
+    const contact = await getContactById(contactId);
     res.json(contact);
+  } catch (err) {
+    res.status(404).json({ message: 'Not found' });
   }
 });
 
@@ -43,11 +47,11 @@ router.post('/', async (req, res, next) => {
 
 router.delete('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await removeContact(contactId);
-  if (!contact) {
-    res.status(404).json({ message: 'Not found' });
-  } else {
+  try {
+    await removeContact(contactId);
     res.json({ message: 'contact deleted' });
+  } catch (err) {
+    res.status(404).json({ message: 'Not found' });
   }
 });
 
@@ -56,11 +60,11 @@ router.put('/:contactId', async (req, res, next) => {
   const update = req.body;
   try {
     await editedContactJoiValidation(update);
-    const contact = await updateContact(contactId, update);
-    if (!contact) {
-      res.status(404).json({ message: 'Not found' });
-    } else {
+    try {
+      const contact = await updateContact(contactId, update);
       res.json(contact);
+    } catch (err) {
+      res.status(404).json({ message: 'Not found' });
     }
   } catch (err) {
     res.status(400).json({ message: 'Missing fields' });
@@ -72,11 +76,11 @@ router.patch('/:contactId/favorite', async (req, res, next) => {
   const body = req.body;
   try {
     await favJoiValidation(body);
-    const contact = await updateFav(contactId, body);
-    if (!contact) {
-      res.status(404).json({ message: 'Not found' });
-    } else {
+    try {
+      const contact = await updateFav(contactId, body);
       res.json(contact);
+    } catch {
+      res.status(404).json({ message: 'Not found' });
     }
   } catch (err) {
     res.status(400).json({ message: 'missing field favorite' });
