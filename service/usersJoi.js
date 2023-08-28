@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 const newUserToValidate = Joi.object({
   password: Joi.string().trim().max(35).required(),
-  email: Joi.string().email().required(), //TODO HOW TO MAKE UNIQUE??
+  email: Joi.string().email().required(), 
   subscription: Joi.string(),
 });
 
