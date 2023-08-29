@@ -1,6 +1,17 @@
-const { addUser } = require('../service/usersMongo');
-const { newUserJoiValidation } = require('../service/usersJoi');
-const { passwordHashBcypt } = require('../service/bcrypt');
+const {
+  addUser,
+  findUserByMail,
+  setJwtInDb,
+} = require('../service/usersMongo');
+const {
+  newUserJoiValidation,
+  logUserJoiValidation,
+} = require('../service/usersJoi');
+const {
+  passwordHashBcypt,
+  passwordCompareBcrypt,
+} = require('../service/bcrypt');
+const { createToken } = require('../service/jwtCreation');
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
@@ -23,6 +34,35 @@ const signUp = async (req, res, next) => {
   }
 };
 
-const logIn = async(req, res, next) =>{};
+const logIn = async (req, res, next) => {
+  const { password, email } = req.body;
+  try {
+    await logUserJoiValidation(password, email);
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  try {
+    const user = await findUserByMail(email);
+    const isPassCorrect = await passwordCompareBcrypt(password, user.password);
+    if (user && isPassCorrect) {
+      const id = user._id.toString();
+      const payload = { _id: user._id };
+      const token = createToken(payload);
+      const newToken = { token: token };
+      const setToken = await setJwtInDb(id, newToken);
+      return res.json({
+        token: setToken.token,
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
+      });
+    } else {
+      throw new Error('Wrong password');
+    }
+  } catch (err) {
+    return res.status(401).json({ message: 'Email or password is wrong' });
+  }
+};
 
 module.exports = { signUp, logIn };
