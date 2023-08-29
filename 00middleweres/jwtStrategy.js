@@ -13,7 +13,7 @@ const params = {
 
 passport.use(
   new Strategy(params, (payload, done) => {
-    findUserForToken(payload.id)
+    findUserForToken(payload.id) // TODO do sprawdzenia payload i jakie ma id
       .then(([user]) => {
         if (!user) {
           return done(new Error('User not found JWT'));
