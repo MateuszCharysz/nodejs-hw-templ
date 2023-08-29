@@ -2,13 +2,16 @@ const User = require('../models/user.schem');
 
 
 const addUser = async (password, email, subscription) => {
-  const contact = await User.create({
+  const user = await User.create({
     password: password,
     email: email,
     subscription: subscription
   });
-  return contact;
+  
+  return user;
 };
+
+const findUserByMail = async email => await User.findOne({email}).lean();
 
 // const user = new Schema({
 //   password: {
@@ -32,5 +35,6 @@ const addUser = async (password, email, subscription) => {
 // });
 
 module.exports = {
-addUser
+addUser,
+findUserByMail
 };

@@ -1,9 +1,8 @@
-const express = require('express');
 const {
   newContactJoiValidation,
   editedContactJoiValidation,
   favJoiValidation,
-} = require('../../service/contactsJoi');
+} = require('../service/contactsJoi');
 const {
   listContacts,
   getContactById,
@@ -11,20 +10,18 @@ const {
   removeContact,
   updateContact,
   updateFav,
-} = require('../../service/contactsMongo');
+} = require('../service/contactsMongo');
 
-const router = express.Router();
-
-router.get('/', async (req, res, next) => {
+const get = async (req, res, next) => {
   try {
     const contacts = await listContacts();
     res.json(contacts);
   } catch (err) {
     res.status(500).json({ message: 'Error ocurred', error: err });
   }
-});
+};
 
-router.get('/:contactId', async (req, res, next) => {
+const getById = async (req, res, next) => {
   const { contactId } = req.params;
   try {
     const contact = await getContactById(contactId);
@@ -32,9 +29,9 @@ router.get('/:contactId', async (req, res, next) => {
   } catch (err) {
     res.status(404).json({ message: 'Not found' });
   }
-});
+};
 
-router.post('/', async (req, res, next) => {
+const postNew = async (req, res, next) => {
   const { name, email, phone } = req.body;
   try {
     await newContactJoiValidation(name, email, phone);
@@ -43,9 +40,9 @@ router.post('/', async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
-});
+};
 
-router.delete('/:contactId', async (req, res, next) => {
+const deleteCont = async (req, res, next) => {
   const { contactId } = req.params;
   try {
     await removeContact(contactId);
@@ -53,9 +50,9 @@ router.delete('/:contactId', async (req, res, next) => {
   } catch (err) {
     res.status(404).json({ message: 'Not found' });
   }
-});
+};
 
-router.put('/:contactId', async (req, res, next) => {
+const putEditCont = async (req, res, next) => {
   const { contactId } = req.params;
   const update = req.body;
   try {
@@ -69,9 +66,9 @@ router.put('/:contactId', async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ message: 'Missing fields' });
   }
-});
+};
 
-router.patch('/:contactId/favorite', async (req, res, next) => {
+const patchFav = async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.body;
   try {
@@ -85,6 +82,6 @@ router.patch('/:contactId/favorite', async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ message: 'missing field favorite' });
   }
-});
+};
 
-module.exports = router;
+module.exports = { get, getById, postNew, putEditCont, patchFav, deleteCont };
