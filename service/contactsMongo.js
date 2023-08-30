@@ -1,7 +1,7 @@
 const Contact = require('../models/contact.schem');
 
-const listContacts = async () => {
-  const contacts = await Contact.find();
+const listContacts = async ({ownerId}) => {
+  const contacts = await Contact.find(ownerId);
   return contacts;
 };
 
