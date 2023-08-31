@@ -13,6 +13,7 @@ const params = {
 
 passport.use(
   new Strategy(params, (payload, done) => {
+    console.log(payload)
     findUserForToken(payload.id) // TODO do sprawdzenia payload i jakie ma id
       .then(([user]) => {
         if (!user) {

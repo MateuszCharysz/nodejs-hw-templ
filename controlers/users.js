@@ -2,6 +2,7 @@ const {
   addUser,
   findUserByMail,
   setJwtInDb,
+  findUserForToken,
 } = require('../service/usersMongo');
 const {
   newUserJoiValidation,
@@ -35,6 +36,7 @@ const signUp = async (req, res, next) => {
 };
 
 const logIn = async (req, res, next) => {
+  console.log(req)
   const { password, email } = req.body;
   try {
     await logUserJoiValidation(password, email);
@@ -65,4 +67,10 @@ const logIn = async (req, res, next) => {
   }
 };
 
-module.exports = { signUp, logIn };
+const logOut = async (req, res, next) => {
+  findUserForToken()
+  console.log(req)
+  res.json({ message: 'it works' });
+}
+
+module.exports = { signUp, logIn, logOut };

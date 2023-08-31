@@ -12,7 +12,7 @@ const addUser = async (password, email, subscription) => {
 const findUserByMail = async email => await User.findOne({ email }).lean();
 
 const findUserForToken = async id => {
-  const user = await User.find({ _id: id });
+  const user = await User.findById(id);
   return user;
 };
 
