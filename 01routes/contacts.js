@@ -1,5 +1,5 @@
 const express = require('express');
-// const { auth } = require('../00middleweres/jwtStrategy');
+const { auth } = require('../00middleweres/jwtStrategy');
 
 const {
   get,
@@ -12,16 +12,16 @@ const {
 
 const router = express.Router();
 
-router.get('/', get);
+router.get('/', auth, get);
 
-router.get('/:contactId', getById);
+router.get('/:contactId', auth, getById);
 
-router.post('/', postNew);
+router.post('/', auth, postNew);
 
-router.delete('/:contactId', deleteCont);
+router.delete('/:contactId', auth, deleteCont);
 
-router.put('/:contactId', putEditCont);
+router.put('/:contactId', auth, putEditCont);
 
-router.patch('/:contactId/favorite', patchFav);
+router.patch('/:contactId/favorite', auth, patchFav);
 
 module.exports = router;
