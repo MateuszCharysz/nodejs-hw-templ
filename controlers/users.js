@@ -2,6 +2,7 @@ const {
   addUser,
   findUserByMail,
   setJwtInDb,
+  deleteJwtInDb,
 } = require('../service/usersMongo');
 const {
   newUserJoiValidation,
@@ -20,22 +21,21 @@ const signUp = async (req, res, next) => {
     try {
       const hashedPassword = await passwordHashBcypt(password);
       const user = await addUser(hashedPassword, email);
-      res.status(201).json({
+      return res.status(201).json({
         user: {
           email: user.email,
           subscription: user.subscription,
         },
       });
     } catch (err) {
-      res.status(409).json({ message: 'Email in use by Mongo' });
+      return res.status(409).json({ message: 'Email in use by Mongo' });
     }
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: err.message });
   }
 };
 
 const logIn = async (req, res, next) => {
-  console.log(req);
   const { password, email } = req.body;
   try {
     await logUserJoiValidation(password, email);
@@ -67,9 +67,9 @@ const logIn = async (req, res, next) => {
 };
 
 const logOut = async (req, res, next) => {
-  console.log(req.user);
-
-  res.json({ message: 'it works' });
+  const { _id } = req.user;
+  await deleteJwtInDb(_id.toString());
+  return res.status(204).end();
 };
 
 module.exports = { signUp, logIn, logOut };

@@ -21,6 +21,12 @@ const setJwtInDb = async (userId, token) => {
   return writeToken;
 };
 
+const deleteJwtInDb = async userId => {
+  const token = { token: null };
+  await User.findByIdAndUpdate(userId, token, { new: true });
+  return null;
+};
+
 // const user = new Schema({
 //   password: {
 //     type: String,
@@ -47,4 +53,5 @@ module.exports = {
   findUserByMail,
   findUserForToken,
   setJwtInDb,
+  deleteJwtInDb,
 };
