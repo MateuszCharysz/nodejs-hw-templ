@@ -13,7 +13,6 @@ const {
 } = require('../service/contactsMongo');
 
 const get = async (req, res, next) => {
-  console.log(req)
   try {
     const contacts = await listContacts();
     res.json(contacts);
