@@ -2,7 +2,6 @@ const {
   addUser,
   findUserByMail,
   setJwtInDb,
-
 } = require('../service/usersMongo');
 const {
   newUserJoiValidation,
@@ -48,7 +47,7 @@ const logIn = async (req, res, next) => {
     const isPassCorrect = await passwordCompareBcrypt(password, user.password);
     if (user && isPassCorrect) {
       const id = user._id.toString();
-      const payload = { id: id };
+      const payload = { id: user._id };
       const token = createToken(payload);
       const newToken = { token: token };
       const setToken = await setJwtInDb(id, newToken);
@@ -68,7 +67,7 @@ const logIn = async (req, res, next) => {
 };
 
 const logOut = async (req, res, next) => {
-  console.log(req);
+  console.log(req.user);
 
   res.json({ message: 'it works' });
 };
