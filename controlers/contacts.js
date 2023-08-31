@@ -13,8 +13,9 @@ const {
 } = require('../service/contactsMongo');
 
 const get = async (req, res, next) => {
+  const { _id } = req.user;
   try {
-    const contacts = await listContacts();
+    const contacts = await listContacts({ owner: _id });
     res.json(contacts);
   } catch (err) {
     res.status(500).json({ message: 'Error ocurred', error: err });
@@ -22,9 +23,13 @@ const get = async (req, res, next) => {
 };
 
 const getById = async (req, res, next) => {
+  const { _id } = req.user;
   const { contactId } = req.params;
   try {
-    const contact = await getContactById(contactId);
+    const contact = await getContactById(contactId, _id);
+    if (!contact) {
+      throw new Error();
+    }
     res.json(contact);
   } catch (err) {
     res.status(404).json({ message: 'Not found' });
@@ -32,10 +37,11 @@ const getById = async (req, res, next) => {
 };
 
 const postNew = async (req, res, next) => {
+  const { _id } = req.user;
   const { name, email, phone } = req.body;
   try {
     await newContactJoiValidation(name, email, phone);
-    const contact = await addContact(name, email, phone);
+    const contact = await addContact(name, email, phone, _id);
     res.status(201).json(contact);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -43,9 +49,13 @@ const postNew = async (req, res, next) => {
 };
 
 const deleteCont = async (req, res, next) => {
+  const { _id } = req.user;
   const { contactId } = req.params;
   try {
-    await removeContact(contactId);
+    const contact = await removeContact(contactId, _id);
+    if (!contact) {
+      throw new Error();
+    }
     res.json({ message: 'contact deleted' });
   } catch (err) {
     res.status(404).json({ message: 'Not found' });
@@ -53,12 +63,16 @@ const deleteCont = async (req, res, next) => {
 };
 
 const putEditCont = async (req, res, next) => {
+  const { _id } = req.user;
   const { contactId } = req.params;
   const update = req.body;
   try {
     await editedContactJoiValidation(update);
     try {
-      const contact = await updateContact(contactId, update);
+      const contact = await updateContact(contactId, update, _id);
+      if (!contact) {
+        throw new Error();
+      }
       res.json(contact);
     } catch (err) {
       res.status(404).json({ message: 'Not found' });
@@ -69,12 +83,13 @@ const putEditCont = async (req, res, next) => {
 };
 
 const patchFav = async (req, res, next) => {
+  const { _id } = req.user;
   const { contactId } = req.params;
   const body = req.body;
   try {
     await favJoiValidation(body);
     try {
-      const contact = await updateFav(contactId, body);
+      const contact = await updateFav(contactId, body, _id);
       res.json(contact);
     } catch {
       res.status(404).json({ message: 'Not found' });
