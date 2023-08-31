@@ -72,4 +72,9 @@ const logOut = async (req, res, next) => {
   return res.status(204).end();
 };
 
-module.exports = { signUp, logIn, logOut };
+const current = (req, res, next) => {
+  const { email, subscription } = req.user;
+  return res.json({ email: email, subscription: subscription });
+};
+
+module.exports = { signUp, logIn, logOut, current };
