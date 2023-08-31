@@ -12,10 +12,11 @@ const params = {
 };
 
 passport.use(
-  new Strategy(params, (payload, done) => {
-    console.log(payload)
-    findUserForToken(payload.id) // TODO do sprawdzenia payload i jakie ma id
+  new Strategy(params, async (payload, done) => {
+    console.log(await findUserForToken(payload.id));
+    await findUserForToken(payload.id)
       .then(([user]) => {
+        console.log(user);
         if (!user) {
           return done(new Error('User not found JWT'));
         }
@@ -24,3 +25,15 @@ passport.use(
       .catch(err => done(err));
   }),
 );
+
+const auth = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
+    if (!user || err) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    req.user = user;
+    next();
+  })(req, res, next);
+};
+
+module.exports = { auth };
