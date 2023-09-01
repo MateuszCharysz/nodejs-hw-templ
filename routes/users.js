@@ -1,6 +1,6 @@
 const express = require('express');
 const {signUp, logIn, logOut, current} = require('../controlers/users')
-const {auth}= require('../00middleweres/jwtStrategy')
+const {auth}= require('../middleweres/jwtStrategy')
 
 const router = express.Router();
 

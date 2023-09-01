@@ -13,10 +13,10 @@ const params = {
 
 passport.use(
   new Strategy(params, async (payload, done) => {
-    const user = await findUserForToken(payload.id.toString());
+    const user = await findUserForToken(payload.id);
     try {
-      if (!user) {
-        return done(new Error('User not found JWT'));
+      if (!user && user._id.toString() === payload.id) {
+        return done(new Error('User not found or token isnt right'));
       } else {
         return done(null, user);
       }
