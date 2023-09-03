@@ -8,6 +8,7 @@ router.post('/signup', signUp)
 router.post('/login', logIn);
 router.get('/logout', auth, logOut)
 router.get('/current', auth, current)
+router.patch('/avatars', auth,)
 
 
 module.exports = router

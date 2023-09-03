@@ -14,8 +14,11 @@ const {
 } = require('../service/bcrypt');
 const { createToken } = require('../service/jwtCreation');
 
+const {avatarUrl} = require ('../service/gravatar')
+
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
+  console.log(avatarUrl(email))
   try {
     await newUserJoiValidation(password, email);
     try {

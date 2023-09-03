@@ -1,10 +1,11 @@
 const User = require('../models/user.schem');
 
-const addUser = async (password, email, subscription) => {
+const addUser = async (password, email, avatarUrl, subscription) => {
   const user = await User.create({
     password: password,
     email: email,
     subscription: subscription,
+    avatarUrl: avatarUrl,
   });
   return user;
 };
