@@ -18,12 +18,13 @@ const {avatarUrl} = require ('../service/gravatar')
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
+  const avatar = avatarUrl(email)
   console.log(avatarUrl(email))
   try {
     await newUserJoiValidation(password, email);
     try {
       const hashedPassword = await passwordHashBcypt(password);
-      const user = await addUser(hashedPassword, email);
+      const user = await addUser(hashedPassword, email, avatar);
       return res.status(201).json({
         user: {
           email: user.email,
@@ -80,4 +81,8 @@ const current = (req, res, next) => {
   return res.json({ email: email, subscription: subscription });
 };
 
-module.exports = { signUp, logIn, logOut, current };
+const updateAvatar = (req, res, next) => {
+
+}
+
+module.exports = { signUp, logIn, logOut, current, updateAvatar };
