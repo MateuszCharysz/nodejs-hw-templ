@@ -3,6 +3,7 @@ const {
   findUserByMail,
   setJwtInDb,
   deleteJwtInDb,
+  pathAvatarInDb,
 } = require('../service/usersMongo');
 const {
   newUserJoiValidation,
@@ -14,12 +15,19 @@ const {
 } = require('../service/bcrypt');
 const { createToken } = require('../service/jwtCreation');
 
-const {avatarUrl} = require ('../service/gravatar')
+const { avatarUrl } = require('../service/gravatar');
+const { jimpedAvatar } = require('../service/jimpAvatar');
+const {
+  tmpFolder,
+  finalFolder,
+  deleteFileTmpFolder,
+  writeTmpFile,
+} = require('../service/fileHandling');
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
-  const avatar = avatarUrl(email)
-  console.log(avatarUrl(email))
+  const avatar = avatarUrl(email);
+  console.log(avatarUrl(email));
   try {
     await newUserJoiValidation(password, email);
     try {
@@ -81,8 +89,29 @@ const current = (req, res, next) => {
   return res.json({ email: email, subscription: subscription });
 };
 
-const updateAvatar = (req, res, next) => {
-
-}
+const updateAvatar = async (req, res, next) => {
+  console.log(req.url);
+  const { _id } = req.user;
+  const { originalname } = req.file;
+  console.log(req.file);
+  const finalFileName = `${_id}_${originalname}`;
+  const tmp = tmpFolder(originalname);
+  const final = finalFolder(finalFileName);
+  try {
+    // await writeTmpFile(originalname);
+    const resize = await jimpedAvatar(tmp, final);
+    if (resize) {
+      await writeTmpFile(originalname, finalFileName);
+      console.log('krw..');
+      const saveUrl = `${req.url}/${finalFileName}`;
+      const dbUrl = await pathAvatarInDb(_id, { avatarUrl: saveUrl });
+      return res.json({ dbUrl });
+    }
+  } catch (err) {
+    // await deleteFileTmpFolder(originalname);
+    console.log(err);
+    return res.status(401).json({ message: 'Not authorized' });
+  }
+};
 
 module.exports = { signUp, logIn, logOut, current, updateAvatar };

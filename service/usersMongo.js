@@ -28,6 +28,11 @@ const deleteJwtInDb = async userId => {
   return null;
 };
 
+const pathAvatarInDb = async (userId, avatarUrl) => {
+  const avatar = await User.findByIdAndUpdate(userId, avatarUrl, { new: true });
+  return avatar;
+};
+
 // const user = new Schema({
 //   password: {
 //     type: String,
@@ -55,4 +60,5 @@ module.exports = {
   findUserForToken,
   setJwtInDb,
   deleteJwtInDb,
+  pathAvatarInDb
 };

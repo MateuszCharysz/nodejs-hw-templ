@@ -1,10 +1,11 @@
 const multer = require('multer');
-const path = require('node:path');
-
-const tempFolder = path.format({ dir: './tmp' });
+require('dotenv').config();
+const tmp = process.env.TEMP_FOLDER;
 
 const multerConfig = multer.diskStorage({
-  desination: tempFolder,
+  desination: (req, file, cb) => {
+    cb(null, tmp);
+  },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
