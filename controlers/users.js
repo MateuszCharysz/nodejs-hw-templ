@@ -19,10 +19,9 @@ const { avatarUrl } = require('../service/gravatar');
 const { jimpedAvatar } = require('../service/jimpAvatar');
 const {
   tmpFolder,
-  finalFolder,
-  deleteFileTmpFolder,
   writeTmpFile,
 } = require('../service/fileHandling');
+const {nanoid} = require('nanoid')
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
@@ -90,28 +89,20 @@ const current = (req, res, next) => {
 };
 
 const updateAvatar = async (req, res, next) => {
-  console.log(req.url);
   const { _id } = req.user;
   const { originalname } = req.file;
-  console.log(req.file);
-  const finalFileName = `${_id}_${originalname}`;
+  const finalFileName = `${nanoid()}_${originalname}`;
   const tmp = tmpFolder(originalname);
-  const final = finalFolder(finalFileName);
   try {
-    // await writeTmpFile(originalname);
-    const resize = await jimpedAvatar(tmp, final);
-    if (resize) {
-      await writeTmpFile(originalname, finalFileName);
-      console.log('krw..');
-      const saveUrl = `${req.url}/${finalFileName}`;
-      const dbUrl = await pathAvatarInDb(_id, { avatarUrl: saveUrl });
-      return res.json({ dbUrl });
-    }
+    await jimpedAvatar(tmp, 'tmp/' + originalname);
+    await writeTmpFile(originalname, finalFileName);
+    const saveUrl = `${req.url}/${finalFileName}`;
+    const dbUrl = await pathAvatarInDb(_id, { avatarUrl: saveUrl });
+    return res.json({ avatarUrl: dbUrl.avatarUrl });
   } catch (err) {
-    // await deleteFileTmpFolder(originalname);
     console.log(err);
+
     return res.status(401).json({ message: 'Not authorized' });
   }
 };
-
 module.exports = { signUp, logIn, logOut, current, updateAvatar };
