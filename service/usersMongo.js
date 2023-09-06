@@ -1,10 +1,11 @@
 const User = require('../models/user.schem');
 
-const addUser = async (password, email, subscription) => {
+const addUser = async (password, email, avatarUrl, subscription) => {
   const user = await User.create({
     password: password,
     email: email,
     subscription: subscription,
+    avatarUrl: avatarUrl,
   });
   return user;
 };
@@ -25,6 +26,11 @@ const deleteJwtInDb = async userId => {
   const token = { token: null };
   await User.findByIdAndUpdate(userId, token, { new: true });
   return null;
+};
+
+const pathAvatarInDb = async (userId, avatarUrl) => {
+  const avatar = await User.findByIdAndUpdate(userId, avatarUrl, { new: true });
+  return avatar;
 };
 
 // const user = new Schema({
@@ -54,4 +60,5 @@ module.exports = {
   findUserForToken,
   setJwtInDb,
   deleteJwtInDb,
+  pathAvatarInDb
 };
