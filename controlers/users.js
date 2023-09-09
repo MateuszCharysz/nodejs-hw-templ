@@ -4,6 +4,8 @@ const {
   setJwtInDb,
   deleteJwtInDb,
   pathAvatarInDb,
+  findUserByVerificationToken,
+  setVerifyAndDeleteVerToken,
 } = require('../service/usersMongo');
 const {
   newUserJoiValidation,
@@ -17,21 +19,23 @@ const { createToken } = require('../service/jwtCreation');
 
 const { avatarUrl } = require('../service/gravatar');
 const { jimpedAvatar } = require('../service/jimpAvatar');
-const {
-  tmpFolder,
-  writeTmpFile,
-} = require('../service/fileHandling');
-const {nanoid} = require('nanoid')
+const { tmpFolder, writeTmpFile } = require('../service/fileHandling');
+const { nanoid } = require('nanoid');
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
   const avatar = avatarUrl(email);
-  console.log(avatarUrl(email));
+  const verificationToken = nanoid();
   try {
     await newUserJoiValidation(password, email);
     try {
       const hashedPassword = await passwordHashBcypt(password);
-      const user = await addUser(hashedPassword, email, avatar);
+      const user = await addUser(
+        hashedPassword,
+        email,
+        avatar,
+        verificationToken,
+      );
       return res.status(201).json({
         user: {
           email: user.email,
@@ -105,4 +109,18 @@ const updateAvatar = async (req, res, next) => {
     return res.status(401).json({ message: 'Not authorized' });
   }
 };
-module.exports = { signUp, logIn, logOut, current, updateAvatar };
+
+const verifyEmail = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  try {
+    const user = await findUserByVerificationToken(verificationToken);
+    if (user) {
+      await setVerifyAndDeleteVerToken(verificationToken);
+      return res.json({ message: 'Verification successful' });
+    }
+  } catch (err) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+};
+
+module.exports = { signUp, logIn, logOut, current, updateAvatar, verifyEmail };

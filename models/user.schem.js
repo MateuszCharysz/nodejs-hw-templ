@@ -13,8 +13,8 @@ const user = new Schema({
   },
   subscription: {
     type: String,
-    enum: ["starter", "pro", "business"],
-    default: "starter"
+    enum: ['starter', 'pro', 'business'],
+    default: 'starter',
   },
   token: {
     type: String,
@@ -22,7 +22,15 @@ const user = new Schema({
   },
   avatarUrl: {
     type: String,
-  }
+  },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
 });
 
 const User = mongoose.model('user', user, 'users');

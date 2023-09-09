@@ -1,11 +1,18 @@
 const User = require('../models/user.schem');
 
-const addUser = async (password, email, avatarUrl, subscription) => {
+const addUser = async (
+  password,
+  email,
+  avatarUrl,
+  subscription,
+  emailToken,
+) => {
   const user = await User.create({
     password: password,
     email: email,
     subscription: subscription,
     avatarUrl: avatarUrl,
+    verificationToken: emailToken,
   });
   return user;
 };
@@ -33,26 +40,16 @@ const pathAvatarInDb = async (userId, avatarUrl) => {
   return avatar;
 };
 
-// const user = new Schema({
-//   password: {
-//     type: String,
-//     required: [true, 'Password is required'],
-//   },
-//   email: {
-//     type: String,
-//     required: [true, 'Email is required'],
-//     unique: true,
-//   },
-//   subscription: {
-//     type: String,
-//     enum: ['starter', 'pro', 'business'],
-//     default: 'starter',
-//   },
-//   token: {
-//     type: String,
-//     default: null,
-//   },
-// });
+const findUserByVerificationToken = async verificationToken =>
+  await User.findOne({ verificationToken }).lean();
+
+const setVerifyAndDeleteVerToken = async verificationToken => {
+  const setVerification = await User.findOneAndUpdate(
+    { verificationToken },
+    { verify: true, verificationToken: null },
+  );
+  return setVerification;
+};
 
 module.exports = {
   addUser,
@@ -60,5 +57,7 @@ module.exports = {
   findUserForToken,
   setJwtInDb,
   deleteJwtInDb,
-  pathAvatarInDb
+  pathAvatarInDb,
+  findUserByVerificationToken,
+  setVerifyAndDeleteVerToken,
 };
