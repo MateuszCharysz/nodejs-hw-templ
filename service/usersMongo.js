@@ -4,8 +4,8 @@ const addUser = async (
   password,
   email,
   avatarUrl,
-  subscription,
   emailToken,
+  subscription,
 ) => {
   const user = await User.create({
     password: password,
@@ -47,6 +47,7 @@ const setVerifyAndDeleteVerToken = async verificationToken => {
   const setVerification = await User.findOneAndUpdate(
     { verificationToken },
     { verify: true, verificationToken: null },
+    { new: true },
   );
   return setVerification;
 };

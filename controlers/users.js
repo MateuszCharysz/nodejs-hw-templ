@@ -21,6 +21,7 @@ const { avatarUrl } = require('../service/gravatar');
 const { jimpedAvatar } = require('../service/jimpAvatar');
 const { tmpFolder, writeTmpFile } = require('../service/fileHandling');
 const { nanoid } = require('nanoid');
+const { sendVerificationEmail } = require('../service/nodemailer');
 
 const signUp = async (req, res, next) => {
   const { password, email } = req.body;
@@ -36,6 +37,7 @@ const signUp = async (req, res, next) => {
         avatar,
         verificationToken,
       );
+      await sendVerificationEmail(user.email, user.verificationToken);
       return res.status(201).json({
         user: {
           email: user.email,
@@ -43,6 +45,7 @@ const signUp = async (req, res, next) => {
         },
       });
     } catch (err) {
+      console.log(err)
       return res.status(409).json({ message: 'Email in use by Mongo' });
     }
   } catch (err) {
@@ -60,7 +63,7 @@ const logIn = async (req, res, next) => {
   try {
     const user = await findUserByMail(email);
     const isPassCorrect = await passwordCompareBcrypt(password, user.password);
-    if (user && isPassCorrect) {
+    if (user && isPassCorrect && user.verify) {
       const id = user._id.toString();
       const payload = { id: user._id };
       const token = createToken(payload);
@@ -74,10 +77,12 @@ const logIn = async (req, res, next) => {
         },
       });
     } else {
-      throw new Error('Wrong password');
+      throw new Error('Wrong password or not verified');
     }
   } catch (err) {
-    return res.status(401).json({ message: 'Email or password is wrong' });
+    return res
+      .status(401)
+      .json({ message: 'Email or password is wrong, or user not veryfied' });
   }
 };
 
