@@ -16,9 +16,9 @@ const emailOptions = (reciver, verificationToken) => {
     from: 'charyszek@interia.pl',
     to: `${reciver}`,
     subject: 'Node GOIT HW06',
-    text: `Hello, below is verification mail for node serwer. 
-    <a href="http://localhost:3000/api/users/verify/${verificationToken}">Verification link</a>
-    `,
+    text: `Hello, below is verification link for node serwer. 
+    http://localhost:3000/api/users/verify/${verificationToken}`,
+    html: `<p>Hello, <a href="http://localhost:3000/api/users/verify/${verificationToken}">here</a> is verification link for node serwer.</p>`,
   };
   return email;
 };
