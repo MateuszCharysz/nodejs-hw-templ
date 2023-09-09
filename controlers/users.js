@@ -45,7 +45,7 @@ const signUp = async (req, res, next) => {
         },
       });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       return res.status(409).json({ message: 'Email in use by Mongo' });
     }
   } catch (err) {
@@ -128,4 +128,31 @@ const verifyEmail = async (req, res, next) => {
   }
 };
 
-module.exports = { signUp, logIn, logOut, current, updateAvatar, verifyEmail };
+const resendVerifyEmail = async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'missing required field email' });
+  }
+  try {
+    const user = await findUserByMail(email);
+    if (user.verify) {
+      return res
+        .status(400)
+        .json({ message: 'Verification has already been passed' });
+    } else {
+      await sendVerificationEmail(user.email, user.verificationToken);
+      return res.json({ message: 'Verification email sent' });
+    }
+  } catch (err) {}
+  return res.status(500).json({ message: 'Failed to send verification email' });
+};
+
+module.exports = {
+  signUp,
+  logIn,
+  logOut,
+  current,
+  updateAvatar,
+  verifyEmail,
+  resendVerifyEmail,
+};
