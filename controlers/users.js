@@ -82,7 +82,7 @@ const logIn = async (req, res, next) => {
   } catch (err) {
     return res
       .status(401)
-      .json({ message: 'Email or password is wrong, or user not veryfied' });
+      .json({ message: 'Email or password is wrong, or user not verified' });
   }
 };
 

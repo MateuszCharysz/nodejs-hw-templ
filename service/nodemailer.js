@@ -13,8 +13,8 @@ const config = {
 const transporter = nodemailer.createTransport(config);
 const emailOptions = (reciver, verificationToken) => {
   const email = {
-    from: 'charyszek@interia.pl',
-    to: `${reciver}`,
+    from: process.env.MAILTRAP_FROM,
+    to: reciver,
     subject: 'Node GOIT HW06',
     text: `Hello, below is verification link for node serwer. 
     http://localhost:3000/api/users/verify/${verificationToken}`,
